@@ -7,8 +7,18 @@ require 'optparse'
 require 'open-uri'
 require 'fileutils'
 
+CONFIG = <<EOC
+--- 
+javascripts: 
+  jquery: http://code.jquery.com/jquery-1.7.js
+  underscore: http://documentcloud.github.com/underscore/underscore.js
+  backbone: http://documentcloud.github.com/backbone/backbone.js
+stylesheets: 
+  bootstrap: https://raw.github.com/twitter/bootstrap/master/bootstrap.css
+EOC
+
 def main(args)
-  cfg = YAML.load(DATA.read)
+  cfg = YAML.load(CONFIG)
   opt = parse_args(args)
   dir = args[0]
   hlp = "Usage: jhc -t HTML_TITLE -j #{cfg['javascripts'].keys.join(',')} -s #{cfg['stylesheets'].keys.join(',')}"
@@ -70,11 +80,3 @@ end
 
 main(ARGV.dup)
 
-__END__
---- 
-javascripts: 
-  jquery: http://code.jquery.com/jquery-1.7.js
-  underscore: http://documentcloud.github.com/underscore/underscore.js
-  backbone: http://documentcloud.github.com/backbone/backbone.js
-stylesheets: 
-  bootstrap: https://raw.github.com/twitter/bootstrap/master/bootstrap.css
