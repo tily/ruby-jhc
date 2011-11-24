@@ -42,7 +42,7 @@ def main(args)
 
   body = nil
   if opt['extract']
-    doc = Nokogiri::HTML.parse(open('http://www.google.com').read)
+    doc = Nokogiri::HTML.parse(open(opt['extract']).read)
     body = doc.search('/html/body').to_s
   end
 
