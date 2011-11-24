@@ -1,7 +1,7 @@
 # jhc
 
 ## USAGE
-    $ jhc -j jquery -s bootstrap testapp
+    $ jhc -t "hello world" -j jquery -s bootstrap testapp
     
     $ ls testapp/*
     testapp/index.html
@@ -17,7 +17,7 @@
     <html>
       <head>
         <meta charset="utf-8">
-        <title></title>
+        <title>hello world</title>
                       <script language="javascript" type="text/javascript" src="./javascripts/jquery.js"></script>
                                 <link rel="stylesheet" type="text/css" href="./stylesheets/bootstrap.css" />
                 </head>
