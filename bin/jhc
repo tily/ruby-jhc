@@ -1,0 +1,80 @@
+#!/usr/bin/ruby
+# inspired by http://d.hatena.ne.jp/hitode909/20110614/1308032945
+# TODO: -e option (extract body from url)
+require 'yaml'
+require 'erb'
+require 'optparse'
+require 'open-uri'
+require 'fileutils'
+
+def main(args)
+  cfg = YAML.load(DATA.read)
+  opt = parse_args(args)
+  dir = args[0]
+  hlp = "Usage: jhc -t HTML_TITLE -j #{cfg['javascripts'].keys.join(',')} -s #{cfg['stylesheets'].keys.join(',')}"
+
+  raise hlp unless dir
+
+  FileUtils.mkdir_p(dir)
+
+  %w(javascripts stylesheets).each do |key|
+    next unless opt[key]
+    FileUtils.mkdir_p(File.join(dir, key))
+    opt[key].split(',').each do |lib|
+      if url = cfg[key][lib]
+        content = open(url).read
+        ext = key == 'javascripts' ? 'js' : 'css'
+	File.open(File.join(dir, key, "#{lib}.#{ext}"), 'w').write(content)
+      end
+    end
+  end
+
+  erb = <<-HTML
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title><%= opt['title'] %></title>
+    <% if opt['javascripts'] -%>
+      <% opt['javascripts'].split(',').each do |key| -%>
+        <script language="javascript" type="text/javascript" src="./javascripts/<%= key %>.js"></script>
+      <% end -%>
+    <% end -%>
+    <% if opt['stylesheets'] -%>
+      <% opt['stylesheets'].split(',').each do |key| -%>
+        <link rel="stylesheet" type="text/css" href="./stylesheets/<%= key %>.css" />
+      <% end -%>
+    <% end -%>
+  </head>
+  <body>
+  </body>
+</html>
+  HTML
+  html = ERB.new(erb, nil, '-').result(binding)
+  File.open(File.join(dir, 'index.html'), 'w').write(html)
+rescue StandardError => e
+  puts e
+  exit 1 
+end
+
+def parse_args(args)
+  opt = {}
+  OptionParser.new do |o|
+    %w(title javascripts stylesheets extract).each do |key|
+      o.on("-#{key.first} #{key.upcase}") {|v| opt[key.first] = v }
+    end
+    o.parse!(args)
+  end
+  opt
+end
+
+main(ARGV.dup)
+
+__END__
+--- 
+javascripts: 
+  jquery: http://code.jquery.com/jquery-1.7.js
+  underscore: http://documentcloud.github.com/underscore/underscore.js
+  backbone: http://documentcloud.github.com/backbone/backbone.js
+stylesheets: 
+  bootstrap: https://raw.github.com/twitter/bootstrap/master/bootstrap.css
