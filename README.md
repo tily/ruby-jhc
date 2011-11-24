@@ -27,3 +27,7 @@
 
 ## INSTALL
     gem install jhc
+
+## SEE ALSO
+
+ * <http://d.hatena.ne.jp/hitode909/20110614/1308032945>
