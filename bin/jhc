@@ -1,11 +1,12 @@
 #!/usr/bin/ruby
 # inspired by http://d.hatena.ne.jp/hitode909/20110614/1308032945
-# TODO: -e option (extract body from url)
 require 'yaml'
 require 'erb'
 require 'optparse'
 require 'open-uri'
 require 'fileutils'
+require 'rubygems'
+require 'nokogiri'
 
 CONFIG = <<EOC
 --- 
@@ -39,6 +40,12 @@ def main(args)
     end
   end
 
+  body = nil
+  if opt['extract']
+    doc = Nokogiri::HTML.parse(open('http://www.google.com').read)
+    body = doc.search('/html/body').to_s
+  end
+
   erb = <<-HTML
 <!DOCTYPE html>
 <html>
@@ -56,8 +63,12 @@ def main(args)
       <% end -%>
     <% end -%>
   </head>
-  <body>
-  </body>
+  <% if body -%>
+    <%= body %>
+  <% else -%>
+    <body>
+    </body>
+  <% end -%>
 </html>
   HTML
   html = ERB.new(erb, nil, '-').result(binding)
