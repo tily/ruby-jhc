@@ -1,6 +1,8 @@
 # jhc
 
 ## USAGE
+    $ jhc 
+    Usage: jhc -t HTML_TITLE -j backbone,underscore,jquery -s bootstrap
     $ jhc -t "hello world" -j jquery -s bootstrap testapp
     
     $ ls testapp/*
