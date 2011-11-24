@@ -82,7 +82,7 @@ def parse_args(args)
   opt = {}
   OptionParser.new do |o|
     %w(title javascripts stylesheets extract).each do |key|
-      o.on("-#{key.first} #{key.upcase}") {|v| opt[key.first] = v }
+      o.on("-#{key.chars.first} #{key.upcase}") {|v| opt[key] = v }
     end
     o.parse!(args)
   end
