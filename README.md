@@ -40,6 +40,11 @@ And you get:
     
     2 directories, 4 files
 
+## MORE USAGE
+
+ * with "-e URL" (e.g. "-e http://www.google.com/"), you can extract URL's html body and add it to your index.html
+ * config is loaded from [Wedata](http://wedata.net/databases/JHC/items). you can reload it with "-r" option.
+
 ## INSTALL
     gem install jhc
 
