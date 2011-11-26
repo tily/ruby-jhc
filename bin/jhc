@@ -25,9 +25,8 @@ def main(args)
   cfg = YAML.load(File.read(CONFIG_PATH))
   opt = parse_args(args)
   dir = args[0]
-  hlp = red("Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap")
 
-  raise hlp unless dir
+  raise help(cfg) unless dir
 
   FileUtils.mkdir_p(dir)
 
@@ -75,6 +74,20 @@ def load_config
   file = File.open(CONFIG_PATH, 'w')
   file.write(json.to_yaml)
   file.close
+end
+
+def help(config)
+  buf = ''
+  buf += red("Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap\n")
+  buf += red("Available JavaScript Libraries:\n")
+  config.select{|c| c['data']['type'] == 'js'}.each do |c|
+    buf += red("\t#{c['data']['key']}\t#{c['data']['url']}\n")
+  end
+  buf += red("Available StyleSheets:\n")
+  config.select{|c| c['data']['type'] == 'css'}.each do |c|
+    buf += red("\t#{c['data']['key']}\t#{c['data']['url']}\n")
+  end
+  buf
 end
 
 main(ARGV.dup)
