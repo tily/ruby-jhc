@@ -5,10 +5,10 @@
     %title= opt['title']
     - if opt['js']
       - opt['js'].split(',').each do |key| 
-        %script{:language=>'javascript',:type=>'text/javascript',:src=>"./javascripts/#{key}.js"}
+        %script{:language=>'javascript',:type=>'text/javascript',:src=>"./js/#{key}.js"}
     - if opt['css']
       - opt['css'].split(',').each do |key| 
-        %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./stylesheets/#{key}.css"}
+        %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./css/#{key}.css"}
   - if body
     = body
   - else
