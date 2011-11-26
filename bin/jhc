@@ -7,35 +7,32 @@ require 'fileutils'
 require 'rubygems'
 require 'nokogiri'
 require 'haml'
+require 'json'
 
-CONFIG = <<EOC
---- 
-javascripts: 
-  jquery: http://code.jquery.com/jquery-1.7.js
-  underscore: http://documentcloud.github.com/underscore/underscore.js
-  backbone: http://documentcloud.github.com/backbone/backbone.js
-stylesheets: 
-  bootstrap: https://raw.github.com/twitter/bootstrap/master/bootstrap.css
-EOC
+WEDATA_URL = 'http://wedata.net/databases/JHC/items.json'
+CONFIG_PATH = ENV['HOME'] + '/.jhc'
 
 def main(args)
-  cfg = YAML.load(CONFIG)
+  if !File.exists?(CONFIG_PATH)
+    puts "getting config data from wedata.net ..."
+    load_config
+  end
+  cfg = YAML.load(File.read(CONFIG_PATH))
   opt = parse_args(args)
   dir = args[0]
-  hlp = "Usage: jhc -t HTML_TITLE -j #{cfg['javascripts'].keys.join(',')} -s #{cfg['stylesheets'].keys.join(',')}"
+  hlp = "Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap"
 
   raise hlp unless dir
 
   FileUtils.mkdir_p(dir)
 
-  %w(javascripts stylesheets).each do |key|
+  %w(js css).each do |key|
     next unless opt[key]
     FileUtils.mkdir_p(File.join(dir, key))
     opt[key].split(',').each do |lib|
-      if url = cfg[key][lib]
-        content = open(url).read
-        ext = key == 'javascripts' ? 'js' : 'css'
-	File.open(File.join(dir, key, "#{lib}.#{ext}"), 'w').write(content)
+      if item = cfg.find {|c| c['data']['key'] == lib && c['data']['type'] == key }
+        content = open(item['data']['url']).read
+        File.open(File.join(dir, key, "#{lib}.#{key}"), 'w').write(content)
       end
     end
   end
@@ -52,11 +49,11 @@ def main(args)
   %head
     %meta{:charset=>'utf-8'}
     %title= opt['title']
-    - if opt['javascripts']
-      - opt['javascripts'].split(',').each do |key| 
+    - if opt['js']
+      - opt['js'].split(',').each do |key| 
         %script{:language=>'javascript',:type=>'text/javascript',:src=>"./javascripts/#{key}.js"}
-    - if opt['stylesheets']
-      - opt['stylesheets'].split(',').each do |key| 
+    - if opt['css']
+      - opt['css'].split(',').each do |key| 
         %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./stylesheets/#{key}.css"}
   - if body
     = body
@@ -73,12 +70,20 @@ end
 def parse_args(args)
   opt = {}
   OptionParser.new do |o|
-    %w(title javascripts stylesheets extract).each do |key|
+    %w(title js css extract).each do |key|
       o.on("-#{key.chars.first} #{key.upcase}") {|v| opt[key] = v }
     end
     o.parse!(args)
   end
+  p opt
   opt
+end
+
+def load_config
+  json = JSON.parse(open(WEDATA_URL).read)
+  file = File.open(CONFIG_PATH, 'w')
+  file.write(json.to_yaml)
+  file.close
 end
 
 main(ARGV.dup)
