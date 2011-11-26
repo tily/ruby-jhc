@@ -1,12 +1,12 @@
 #!/usr/bin/ruby
 # inspired by http://d.hatena.ne.jp/hitode909/20110614/1308032945
 require 'yaml'
-require 'erb'
 require 'optparse'
 require 'open-uri'
 require 'fileutils'
 require 'rubygems'
 require 'nokogiri'
+require 'haml'
 
 CONFIG = <<EOC
 --- 
@@ -46,32 +46,24 @@ def main(args)
     body = doc.search('/html/body').to_s
   end
 
-  erb = <<-HTML
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title><%= opt['title'] %></title>
-    <% if opt['javascripts'] -%>
-      <% opt['javascripts'].split(',').each do |key| -%>
-        <script language="javascript" type="text/javascript" src="./javascripts/<%= key %>.js"></script>
-      <% end -%>
-    <% end -%>
-    <% if opt['stylesheets'] -%>
-      <% opt['stylesheets'].split(',').each do |key| -%>
-        <link rel="stylesheet" type="text/css" href="./stylesheets/<%= key %>.css" />
-      <% end -%>
-    <% end -%>
-  </head>
-  <% if body -%>
-    <%= body %>
-  <% else -%>
-    <body>
-    </body>
-  <% end -%>
-</html>
-  HTML
-  html = ERB.new(erb, nil, '-').result(binding)
+  haml = <<-'EOH'
+!!!
+%html
+  %head
+    %meta{:charset=>'utf-8'}
+    %title= opt['title']
+    - if opt['javascripts']
+      - opt['javascripts'].split(',').each do |key| 
+        %script{:language=>'javascript',:type=>'text/javascript',:src=>"./javascripts/#{key}.js"}
+    - if opt['stylesheets']
+      - opt['stylesheets'].split(',').each do |key| 
+        %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./stylesheets/#{key}.css"}
+  - if body
+    = body
+  - else
+    %body
+  EOH
+  html = Haml::Engine.new(haml, :format => :html5).render(binding)
   File.open(File.join(dir, 'index.html'), 'w').write(html)
 rescue StandardError => e
   puts e
