@@ -18,13 +18,12 @@
     <!DOCTYPE html>
     <html>
       <head>
-        <meta charset="utf-8">
+        <meta charset='utf-8'>
         <title>hello world</title>
-                      <script language="javascript" type="text/javascript" src="./javascripts/jquery.js"></script>
-                                <link rel="stylesheet" type="text/css" href="./stylesheets/bootstrap.css" />
-                </head>
-      <body>
-      </body>
+        <script language='javascript' src='./javascripts/jquery.js' type='text/javascript'></script>
+        <link href='./stylesheets/bootstrap.css' rel='stylesheet' type='text/css'>
+      </head>
+      <body></body>
     </html>
 
 ## INSTALL
