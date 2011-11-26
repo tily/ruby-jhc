@@ -1,0 +1,15 @@
+!!!
+%html
+  %head
+    %meta{:charset=>'utf-8'}
+    %title= opt['title']
+    - if opt['js']
+      - opt['js'].split(',').each do |key| 
+        %script{:language=>'javascript',:type=>'text/javascript',:src=>"./javascripts/#{key}.js"}
+    - if opt['css']
+      - opt['css'].split(',').each do |key| 
+        %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./stylesheets/#{key}.css"}
+  - if body
+    = body
+  - else
+    %body

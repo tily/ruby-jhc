@@ -43,23 +43,7 @@ def main(args)
     body = doc.search('/html/body').to_s
   end
 
-  haml = <<-'EOH'
-!!!
-%html
-  %head
-    %meta{:charset=>'utf-8'}
-    %title= opt['title']
-    - if opt['js']
-      - opt['js'].split(',').each do |key| 
-        %script{:language=>'javascript',:type=>'text/javascript',:src=>"./javascripts/#{key}.js"}
-    - if opt['css']
-      - opt['css'].split(',').each do |key| 
-        %link{:rel=>'stylesheet',:type=>'text/css',:href=>"./stylesheets/#{key}.css"}
-  - if body
-    = body
-  - else
-    %body
-  EOH
+  haml = File.read(File.dirname(__FILE__) + '/../lib/index.haml')
   html = Haml::Engine.new(haml, :format => :html5).render(binding)
   File.open(File.join(dir, 'index.html'), 'w').write(html)
 rescue StandardError => e
