@@ -81,16 +81,22 @@ end
 
 def help(config)
   buf = ''
-  buf += red("Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap\n")
-  buf += red("Available JavaScript Libraries:\n")
+  buf += "Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap -e url -r\n"
+  buf += "Description:\n"
+  buf += "\t-t: specify HTML title\n"
+  buf += "\t-j: specify javascript libraries\n"
+  buf += "\t-c: specify css\n"
+  buf += "\t-e: specify url to extract body\n"
+  buf += "\t-r: reload wedata config and exit\n"
+  buf += "Available JavaScript Libraries:\n"
   config.select{|c| c['data']['type'] == 'js'}.each do |c|
-    buf += red("\t#{c['data']['key']}\t#{c['data']['url']}\n")
+    buf += "\t#{c['data']['key']}\t#{c['data']['url']}\n"
   end
-  buf += red("Available StyleSheets:\n")
+  buf += "Available StyleSheets:\n"
   config.select{|c| c['data']['type'] == 'css'}.each do |c|
-    buf += red("\t#{c['data']['key']}\t#{c['data']['url']}\n")
+    buf += "\t#{c['data']['key']}\t#{c['data']['url']}\n"
   end
-  buf
+  red(buf)
 end
 
 main(ARGV.dup)
