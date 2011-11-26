@@ -9,19 +9,23 @@ require 'rubygems'
 require 'nokogiri'
 require 'haml'
 require 'json'
+require 'term/ansicolor'
+include Term::ANSIColor
 
+VERSION = File.read(File.dirname(__FILE__) + '/../VERSION')
 WEDATA_URL = 'http://wedata.net/databases/JHC/items.json'
 CONFIG_PATH = ENV['HOME'] + '/.jhc'
 
 def main(args)
+  puts white("# welcome to jhc v#{VERSION}")
   if !File.exists?(CONFIG_PATH)
-    puts "getting config data from wedata.net ..."
+    puts white("# downloading: config data from wedata.net")
     load_config
   end
   cfg = YAML.load(File.read(CONFIG_PATH))
   opt = parse_args(args)
   dir = args[0]
-  hlp = "Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap"
+  hlp = red("Usage: jhc -t HTML_TITLE -j jquery,underscore -c bootstrap")
 
   raise hlp unless dir
 
@@ -34,18 +38,21 @@ def main(args)
       if item = cfg.find {|c| c['data']['key'] == lib && c['data']['type'] == key }
         content = open(item['data']['url']).read
         File.open(File.join(dir, key, "#{lib}.#{key}"), 'w').write(content)
+        puts blue("add: " +  File.join(dir, key, "#{lib}.#{key}")) + white(" # #{item['data']['url']}")
       end
     end
   end
 
   body = nil
   if opt['extract']
+    puts white("# extracting body of #{opt['extract']}")
     doc = Nokogiri::HTML.parse(open(opt['extract']).read)
     body = doc.search('/html/body').to_s.toutf8
   end
 
   haml = File.read(File.dirname(__FILE__) + '/../lib/index.haml')
   html = Haml::Engine.new(haml, :format => :html5).render(binding)
+  puts blue("add: #{File.join(dir, 'index.html')}")
   File.open(File.join(dir, 'index.html'), 'w').write(html)
 rescue StandardError => e
   puts e
