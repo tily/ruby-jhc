@@ -12,4 +12,6 @@ group :development do
   gem "rcov", ">= 0"
   gem "nokogiri"
   gem "haml"
+  gem "json"
+  gem "term-ansicolor"
 end
