@@ -18,14 +18,16 @@ CONFIG_PATH = ENV['HOME'] + '/.jhc'
 
 def main(args)
   puts white("# welcome to jhc v#{VERSION}")
-  if !File.exists?(CONFIG_PATH)
+  opt = parse_args(args)
+
+  if !File.exists?(CONFIG_PATH) || opt['reload']
     puts white("# downloading: config data from wedata.net")
     load_config
+    exit 0 if opt['reload']
   end
   cfg = YAML.load(File.read(CONFIG_PATH))
-  opt = parse_args(args)
-  dir = args[0]
 
+  dir = args[0]
   raise help(cfg) unless dir
 
   FileUtils.mkdir_p(dir)
@@ -64,6 +66,7 @@ def parse_args(args)
     %w(title js css extract).each do |key|
       o.on("-#{key.chars.first} #{key.upcase}") {|v| opt[key] = v }
     end
+    o.on("-r") {|v| opt['reload'] = v }
     o.parse!(args)
   end
   opt
