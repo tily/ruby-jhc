@@ -4,6 +4,7 @@ require 'yaml'
 require 'optparse'
 require 'open-uri'
 require 'fileutils'
+require 'kconv'
 require 'rubygems'
 require 'nokogiri'
 require 'haml'
@@ -40,7 +41,7 @@ def main(args)
   body = nil
   if opt['extract']
     doc = Nokogiri::HTML.parse(open(opt['extract']).read)
-    body = doc.search('/html/body').to_s
+    body = doc.search('/html/body').to_s.toutf8
   end
 
   haml = File.read(File.dirname(__FILE__) + '/../lib/index.haml')
